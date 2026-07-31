@@ -1,0 +1,15 @@
+email_id,sender_name,sender_email,subject,body,true_intent
+H01,Wendy Clarke,wendy@clarkeco.com,Ballpark figure needed,"Morning. Before we go further internally I need a rough idea of spend for a bilingual company site. What sort of range are we looking at?",pricing
+H02,Farhan Iqbal,farhan@iqbaltraders.pk,Nothing loads on our portal,"Since last night nobody in the office can open the dashboard, it just spins forever. Please sort this out.",technical_support
+H03,Beatrice Lund,b.lund@lundnordic.se,Are we still on schedule,"Could you let me know if the second phase is going to land when we agreed, and what is left outstanding?",project_status
+H04,Omar Sultan,omar@sultangroup.om,Coffee or a call?,"Would love 20 minutes with someone from your side to talk through what we need. Tuesday morning works for me.",meeting_request
+H05,Helen Barrow,helen.barrow@barrowtrust.org,Strange emails pretending to be our director,"Staff keep getting messages that look like they come from our director asking for gift cards. We are worried someone is inside our system.",security_incident
+H06,Rizwan Sheikh,rizwan@sheikhmotors.pk,Charged again after cancelling,"We ended the agreement last month but another payment left our account yesterday. Please sort out a refund.",billing
+H07,Angela Ferrari,angela@ferraristudio.it,Still no answer,"This is my second message about the proposal I sent. Nobody has replied and it has been over a week now.",follow_up
+H08,Kwame Boateng,kwame@boatengdigital.gh,Working together on client projects,"We handle branding for a number of clients who keep asking about security testing. Could we look at some sort of arrangement where we bring you in?",partnership
+H09,Ines Delgado,ines.delgado@delgadofarms.es,Can your team handle a booking system,"We need an online booking and scheduling system for our farm tours. Is that within what you build?",service_inquiry
+H10,Tariq Mahmood,tariq.mahmood@gmail.com,Fresh graduate looking for a start,"I finished my degree in June and would really like to join your training programme. What do I need to send you?",careers
+H11,Julia Brandt,julia.brandt@brandtgmbh.de,Formal costing please,"Kindly provide a written costing for a security review of our head office network, twenty five workstations.",quote_request
+H12,Noor Al-Sabah,noor@alsabahholding.kw,Third time asking and still nothing,"I have raised the same issue three times now and each time I am told someone will call. Nobody ever does. This is a shambles.",complaint
+H13,Peter Sandoval,peter@sandovalimports.mx,Some background on your firm,"Before our board meeting could you send whatever you have on your company, previous work and how long you have been operating?",general_info
+H14,Lisa Chen,lisa.chen@chenpartners.sg,What would ads management run us,"Curious what you charge monthly to look after a Google Ads account, and whether that includes the ad budget itself.",pricing

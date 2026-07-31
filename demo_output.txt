@@ -1,0 +1,123 @@
+
+==============================================================================
+  SafeX Solutions - AI Email Assistant  |  Week 2 prototype
+==============================================================================
+Sample inbox : 40 emails across 13 intents
+true_intent
+service_inquiry      5
+pricing              4
+technical_support    4
+quote_request        3
+complaint            3
+meeting_request      3
+billing              3
+security_incident    3
+project_status       3
+general_info         3
+careers              2
+partnership          2
+follow_up            2
+
+==============================================================================
+  1. Information extraction
+==============================================================================
+Email  : Ransomware concern
+One of our staff opened a suspicious attachment and files on that machine now have strange extensions. We think it may be ransomware. Please advise urgently. Yusuf
+
+  sender_first_name     : Yusuf
+  services_mentioned    : ['cybersecurity']
+  documents_requested   : []
+  invoice_numbers       : []
+  is_refund_request     : False
+  money_mentions        : []
+  quantities            : []
+  dates_mentioned       : []
+  times_mentioned       : []
+  organisations         : []
+  urgency               : high
+  sentiment             : neutral
+  word_count            : 27
+  spacy_used            : False
+
+==============================================================================
+  2. Intent classification
+==============================================================================
+Accuracy on labelled corpus : 100.0%
+Accuracy on holdout set     : 100.0%  (64.3% before rule tuning)
+
+Probe -> technical_support (13.7%); top3 [('technical_support', 0.1367), ('pricing', 0.1147), ('service_inquiry', 0.0828)]
+
+==============================================================================
+  3. Drafted replies
+==============================================================================
+LLM polish: ON (Groq)
+
+--- IN  [E005] Tom Whitfield: Very disappointed with the delay
+    I was told the app would be delivered by the 30th and it is now two weeks past that with no update from anyone. This is not acceptable and I would lik
+--- OUT intent=complaint conf=88% priority=80 review=True via=llm
+Subject: Re: Very disappointed with the delay
+Hi Tom,
+
+I apologize for the delay in delivering your app, which has fallen short of our standards. I understand that you were expecting it by the 30th, and it's unacceptable that we've missed that deadline without keeping you updated.
+
+I'm escalating this issue to our account lead, who will provide a clear explanation and a plan to get your project back on track. You can expect to hear from us within one working day. If you'd prefer to discuss this further, you can call +92 327 5781580 and ask for the customer success team.
+
+Sincerely,
+Customer Success Team
+SafeX Solutions
+
+--- IN  [E011] Robert Nash: Suspicious login attempts on our systems
+    We have detected repeated failed login attempts on our email server over the weekend and we are worried about a breach. Can your security team help us
+--- OUT intent=security_incident conf=89% priority=100 review=True via=llm
+Subject: Re: Suspicious login attempts on our systems
+Hi Robert,
+
+We're treating this as a priority and our security team is ready to help. To contain the situation, please take immediate action: disconnect any affected machine from the network, but don't power it off. Also, reset credentials for the accounts involved from a known-clean device.
+
+It's crucial to preserve logs and not delete suspicious emails or files as they may be evidence. If you receive any ransom or extortion message, do not respond or pay.
+
+One of our security engineers will contact you directly. If you need urgent assistance, call +92 327 5781580 and reference this email.
+
+Regards,
+Customer Success Team
+SafeX Solutions
+
+--- IN  [E024] Rachel Kim: Ballpark budget for a custom platform
+    We need a custom SaaS platform with user dashboards and reporting. Roughly what budget range should we plan for? Rachel
+--- OUT intent=pricing conf=86% priority=40 review=False via=llm
+Subject: Re: Ballpark budget for a custom platform
+Hi Rachel,
+
+Thanks for considering SafeX Solutions for your custom SaaS platform. We'd love to help you bring your vision to life.
+
+To give you a better understanding of what to expect, our pricing is tailored to each project's unique needs. The scope of work, including features and integrations, plays a significant role in determining the final cost. 
+
+If you're available, a brief call this week would be a great opportunity to discuss your requirements in more detail. We can also be reached at contact@safexsolutions.com or +92 327 5781580.
+
+Best regards,
+Customer Success Team
+SafeX Solutions
+
+
+==============================================================================
+  4. Inbox triage (sorted by priority)
+==============================================================================
+40 processed | 11 flagged for human review | avg 596 ms per email
+
+ PRIO  ID    INTENT             REVIEW  SUBJECT
+  100  E004  technical_support  YES     Re: Website is down since this morning
+  100  E011  security_incident  YES     Re: Suspicious login attempts on our sys
+  100  E025  security_incident  YES     Re: Ransomware concern
+   95  E014  technical_support  YES     Re: Login page not working for our users
+   90  E038  security_incident  YES     Re: Phishing emails targeting our staff
+   80  E005  complaint          YES     Re: Very disappointed with the delay
+   80  E018  complaint          YES     Re: Unhappy with the SEO results
+   80  E027  complaint          YES     Re: No response to my complaint
+   75  E023  technical_support  -       Re: Site loading very slowly
+   75  E033  technical_support  -       Re: Emails going to spam
+   65  E008  billing            YES     Re: Invoice 4471 - double charged
+   65  E037  billing            YES     Re: Refund for cancelled service
+
+==============================================================================
+  Done
+==============================================================================

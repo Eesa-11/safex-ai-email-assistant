@@ -1,0 +1,17 @@
+# Core (required)
+pandas>=2.0
+numpy>=1.24
+scikit-learn>=1.3
+requests>=2.31
+
+# API layer
+fastapi>=0.110
+uvicorn[standard]>=0.27
+
+# Notebook (optional - only to run email_assistant_demo.ipynb)
+jupyter>=1.0
+matplotlib>=3.7
+
+# Optional NLP upgrade: enables spaCy NER in extractor.py
+# pip install spacy && python -m spacy download en_core_web_sm
+# spacy>=3.7

@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>SafeX AI Email Assistant</title>
+<style>
+  :root{
+    --bg:#0f1420; --panel:#171d2b; --panel-2:#1e2536; --line:#2a3346;
+    --text:#e8ecf4; --muted:#94a3b8; --accent:#3b82f6; --accent-2:#22d3ee;
+    --ok:#22c55e; --warn:#f59e0b; --danger:#ef4444;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--text);
+       font:15px/1.55 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif}
+  header{padding:20px 28px;border-bottom:1px solid var(--line);
+         display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+  header h1{font-size:19px;margin:0;font-weight:650}
+  header .sub{color:var(--muted);font-size:13px}
+  .pill{margin-left:auto;font-size:12px;padding:5px 11px;border-radius:999px;
+        background:var(--panel-2);border:1px solid var(--line);color:var(--muted)}
+  .dot{display:inline-block;width:7px;height:7px;border-radius:50%;
+       background:var(--ok);margin-right:6px;vertical-align:middle}
+  main{display:grid;grid-template-columns:1fr 1fr;gap:18px;padding:22px 28px;
+       max-width:1500px;margin:0 auto;align-items:start}
+  @media(max-width:960px){main{grid-template-columns:1fr}}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px}
+  .card h2{margin:0 0 14px;font-size:14px;text-transform:uppercase;
+           letter-spacing:.6px;color:var(--muted);font-weight:650}
+  label{display:block;font-size:12px;color:var(--muted);margin:12px 0 5px}
+  input,textarea,select{width:100%;background:var(--panel-2);color:var(--text);
+    border:1px solid var(--line);border-radius:8px;padding:10px 12px;
+    font:inherit;font-size:14px;outline:none}
+  input:focus,textarea:focus,select:focus{border-color:var(--accent)}
+  textarea{min-height:150px;resize:vertical}
+  .row{display:flex;gap:10px;margin-top:16px;flex-wrap:wrap}
+  button{background:var(--accent);color:#fff;border:0;border-radius:8px;
+         padding:10px 18px;font:inherit;font-weight:600;cursor:pointer}
+  button.ghost{background:transparent;border:1px solid var(--line);color:var(--text)}
+  button:disabled{opacity:.5;cursor:not-allowed}
+  .meta{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}
+  .tag{font-size:12px;padding:4px 10px;border-radius:6px;
+       background:var(--panel-2);border:1px solid var(--line);color:var(--muted)}
+  .tag b{color:var(--text);font-weight:600}
+  .tag.ok{border-color:rgba(34,197,94,.4);color:#86efac}
+  .tag.warn{border-color:rgba(245,158,11,.45);color:#fcd34d}
+  .tag.danger{border-color:rgba(239,68,68,.45);color:#fca5a5}
+  pre.draft{white-space:pre-wrap;background:var(--panel-2);border:1px solid var(--line);
+    border-radius:8px;padding:16px;font:inherit;font-size:14px;margin:0;min-height:220px}
+  .bar{height:6px;background:var(--panel-2);border-radius:99px;overflow:hidden;margin-top:4px}
+  .bar>span{display:block;height:100%;background:linear-gradient(90deg,var(--accent),var(--accent-2))}
+  .scores{margin-top:14px;font-size:12px;color:var(--muted)}
+  .scores div{margin-bottom:7px}
+  .reasons{margin-top:12px;font-size:12.5px;color:#fcd34d}
+  .reasons li{margin-bottom:3px}
+  .muted{color:var(--muted);font-size:12.5px}
+  .queue{max-height:420px;overflow:auto;margin-top:12px}
+  .qrow{display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:8px;
+        border:1px solid var(--line);margin-bottom:7px;background:var(--panel-2);
+        cursor:pointer;font-size:13px}
+  .qrow:hover{border-color:var(--accent)}
+  .prio{font-weight:700;min-width:34px;text-align:center;border-radius:6px;padding:3px 0;font-size:12px}
+  .p-hi{background:rgba(239,68,68,.18);color:#fca5a5}
+  .p-md{background:rgba(245,158,11,.18);color:#fcd34d}
+  .p-lo{background:rgba(34,197,94,.15);color:#86efac}
+  .qsub{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .qint{color:var(--muted);font-size:11.5px}
+  footer{padding:14px 28px;color:var(--muted);font-size:12px;border-top:1px solid var(--line)}
+</style>
+</head>
+<body>
+<header>
+  <h1>SafeX AI Email Assistant</h1>
+  <span class="sub">Week 2 &middot; Business Automation Research prototype</span>
+  <span class="pill" id="status"><span class="dot"></span>checking…</span>
+</header>
+
+<main>
+  <!-- ------------------------------------------------ input -->
+  <section class="card">
+    <h2>Inbound email</h2>
+    <label>Load a sample</label>
+    <select id="sample"><option value="">— write your own —</option></select>
+
+    <label>Sender name</label>
+    <input id="sender" placeholder="Priya Nair" />
+
+    <label>Subject</label>
+    <input id="subject" placeholder="Website is down since this morning" />
+
+    <label>Body</label>
+    <textarea id="body" placeholder="Paste the customer's email here…"></textarea>
+
+    <div class="row">
+      <button id="go">Generate draft</button>
+      <button class="ghost" id="runall">Process whole inbox</button>
+      <button class="ghost" id="clear">Clear</button>
+    </div>
+
+    <div class="queue" id="queue"></div>
+  </section>
+
+  <!-- ------------------------------------------------ output -->
+  <section class="card">
+    <h2>Suggested reply</h2>
+    <div class="meta" id="meta"><span class="muted">No draft yet.</span></div>
+    <pre class="draft" id="draft">Pick a sample email or paste one in, then hit “Generate draft”.</pre>
+    <ul class="reasons" id="reasons"></ul>
+    <div class="scores" id="scores"></div>
+    <div class="row">
+      <button class="ghost" id="copy">Copy draft</button>
+    </div>
+  </section>
+</main>
+
+<footer>Rules + TF-IDF intent classification → template guardrail → LLM polish. Falls back to templates when no LLM key is set.</footer>
+
+<script>
+const API = location.origin;
+const $ = id => document.getElementById(id);
+let SAMPLES = [];
+
+// Subjects come from user-supplied email; never inject them as raw HTML.
+const esc = s => String(s ?? '').replace(/[&<>"']/g,
+  c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+
+async function boot(){
+  try{
+    const h = await (await fetch(API+'/health')).json();
+    $('status').innerHTML = '<span class="dot"></span>' +
+      (h.llm_enabled ? 'LLM polish: on' : 'template mode (no LLM key)') +
+      ' · ' + h.intents.length + ' intents';
+  }catch(e){ $('status').textContent = 'API offline'; }
+
+  try{
+    const s = await (await fetch(API+'/samples')).json();
+    SAMPLES = s.emails;
+    SAMPLES.forEach((e,i)=>{
+      const o = document.createElement('option');
+      o.value = i; o.textContent = `${e.email_id} — ${e.subject}`;
+      $('sample').appendChild(o);
+    });
+  }catch(e){}
+}
+
+$('sample').onchange = e => {
+  const v = e.target.value; if(v==='') return;
+  const s = SAMPLES[v];
+  $('sender').value = s.sender_name; $('subject').value = s.subject; $('body').value = s.body;
+};
+$('clear').onclick = () => {
+  ['sender','subject','body'].forEach(i=>$(i).value='');
+  $('sample').value=''; $('queue').innerHTML=''; $('reasons').innerHTML='';
+  $('meta').innerHTML='<span class="muted">No draft yet.</span>';
+  $('draft').textContent='Pick a sample email or paste one in, then hit “Generate draft”.';
+};
+$('copy').onclick = () => navigator.clipboard.writeText($('draft').textContent);
+
+function render(r){
+  const conf = Math.round(r.confidence*100);
+  const cls = r.priority>=80?'danger':(r.priority>=55?'warn':'ok');
+  $('meta').innerHTML = `
+    <span class="tag"><b>${esc(r.intent)}</b> ${conf}%</span>
+    <span class="tag ${cls}">priority <b>${r.priority}</b></span>
+    <span class="tag">urgency <b>${r.urgency}</b></span>
+    <span class="tag">sentiment <b>${r.sentiment}</b></span>
+    <span class="tag">via <b>${r.generator}</b></span>
+    <span class="tag">${r.latency_ms} ms</span>
+    <span class="tag ${r.needs_human_review?'warn':'ok'}">
+      ${r.needs_human_review?'needs review':'ready to send'}</span>`;
+  $('draft').textContent = 'Subject: ' + r.subject + '\n\n' + r.draft;
+  $('reasons').innerHTML = (r.review_reasons||[]).map(x=>`<li>${esc(x)}</li>`).join('');
+  $('scores').innerHTML = '<b>Top intents</b>' + r.top_intents.map(([i,s])=>
+    `<div>${esc(i)} — ${(s*100).toFixed(1)}%<div class="bar"><span style="width:${s*100}%"></span></div></div>`
+  ).join('');
+}
+
+$('go').onclick = async () => {
+  const payload = {sender_name:$('sender').value, subject:$('subject').value, body:$('body').value};
+  if(!payload.subject && !payload.body) return;
+  $('go').disabled = true; $('draft').textContent = 'Drafting…';
+  try{
+    const r = await (await fetch(API+'/draft',{method:'POST',
+      headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)})).json();
+    render(r);
+  }catch(e){ $('draft').textContent = 'Error: '+e; }
+  $('go').disabled = false;
+};
+
+$('runall').onclick = async () => {
+  if(!SAMPLES.length) return;
+  $('runall').disabled = true; $('queue').innerHTML = '<div class="muted">Processing inbox…</div>';
+  try{
+    const r = await (await fetch(API+'/batch',{method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({emails:SAMPLES.map(s=>({email_id:s.email_id,subject:s.subject,
+        body:s.body,sender_name:s.sender_name}))})})).json();
+    $('queue').innerHTML = `<div class="muted" style="margin:10px 0">
+      ${r.count} emails processed · ${r.needs_review} flagged for human review · click a row to view</div>` +
+      r.results.map((x,i)=>{
+        const p = x.priority>=80?'p-hi':(x.priority>=55?'p-md':'p-lo');
+        return `<div class="qrow" data-i="${i}"><span class="prio ${p}">${x.priority}</span>
+          <span class="qsub">${esc(x.email_id)} — ${esc(x.subject.replace(/^Re: /,''))}</span>
+          <span class="qint">${esc(x.intent)}</span></div>`;
+      }).join('');
+    [...document.querySelectorAll('.qrow')].forEach(el=>{
+      el.onclick = () => render(r.results[el.dataset.i]);
+    });
+    if(r.results.length) render(r.results[0]);
+  }catch(e){ $('queue').innerHTML = 'Error: '+e; }
+  $('runall').disabled = false;
+};
+
+boot();
+</script>
+</body>
+</html>
